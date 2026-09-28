@@ -1,0 +1,35 @@
+name: Publish v1.0
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/release.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-v1.0
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch committed files and publish verified assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh repo clone "$GITHUB_REPOSITORY" project
+          cd project
+          git checkout --detach "$GITHUB_SHA"
+          cd release
+          sha256sum -c MM2GUS-1.0-SHA256SUMS.txt
+          cd ..
+          gh release create v1.0 \
+            release/MM2GUS-1.0-binary.zip \
+            release/MM2GUS-1.0-source.zip \
+            release/MM2GUS-1.0-SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Micro Machines 2 GUS hardware audio patch 1.0" \
+            --notes-file docs/RELEASE-1.0.md \
+            --latest

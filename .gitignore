@@ -1,0 +1,10 @@
+# Local game copies and backups must not be committed.
+*.EXE
+*.exe
+*.OLD
+*.old
+*.BAK
+*.bak
+*.SFX
+*.MUS
+*.log
